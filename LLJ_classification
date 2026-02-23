@@ -1,0 +1,72 @@
+import xarray as xr
+import pandas as pd
+import numpy as np
+import os
+
+def detect_llj(ds, speed_var='ws', level_dim='pressure_level'):
+
+    ws = ds[speed_var]
+    wd = ds["wd"]
+
+    lev = ds[level_dim]
+    # 950–700 hPa aralığını MASKE ile seç (sıra bağımsız, NaN güvenli)
+    in_jet_band = (lev <= 950) & (lev >= 700)
+    ws_band = ws.where(in_jet_band)
+
+    # 1) 950–700 içindeki minimum ve seviyesi
+    ws_min = ws_band.min(dim=level_dim, skipna=True)
+    idx_min = ws_band.fillna(np.inf).argmin(dim=level_dim)
+    lev_vals = lev.values
+    ws_min_level = xr.apply_ufunc(
+        lambda i: lev_vals[i],
+        idx_min,
+        vectorize=True,
+        dask="parallelized",
+        output_dtypes=[lev.dtype],
+    )
+
+    # 2) Minimumun ALTINDAKİ (daha yüzeye yakın) kesit: lev > min_level
+    ws_lower = ws.where(lev > ws_min_level)
+
+    # 3) Alt kesitte maksimum ve seviyesi
+    ws_max = ws_lower.max(dim=level_dim, skipna=True)
+    idx_max = ws_lower.fillna(-1e9).argmax(dim=level_dim)
+    ws_max_level = xr.apply_ufunc(
+        lambda i: lev_vals[i],
+        idx_max,
+        vectorize=True,
+        dask="parallelized",
+        output_dtypes=[lev.dtype],
+    ).where(ws_max > -1e8)
+    wd_at_max = wd.isel({level_dim: idx_max})
+
+    # 4) Fark
+    diff = ws_max - ws_min
+    is_not_surface = ws_max_level < 1000
+
+    # 5) Bonner tipleri
+    bonner = xr.zeros_like(ws_max, dtype=int)
+    bonner = xr.where((ws_max >= 12) & (ws_max < 16) & (diff >= 6), 1, bonner)
+    bonner = xr.where((ws_max >= 16) & (ws_max < 20) & (diff >= 8), 2, bonner)
+    bonner = xr.where((ws_max >= 20) & (diff >= 10), 3, bonner)
+
+    # 6) ASJ tipleri
+    asj = xr.zeros_like(ws_max, dtype=int)
+    asj = xr.where((ws_max >= 10) & (ws_max < 14) & (diff >= 5), 1, asj)
+    asj = xr.where((ws_max >= 14) & (ws_max < 18) & (diff >= 7), 2, asj)
+    asj = xr.where((ws_max >= 18) & (diff >= 10), 3, asj)
+
+    llj_flag = (bonner > 0) & is_not_surface # İstersen asj>0 ile de ayrı bayrak üretebilirsin
+
+    return xr.Dataset({
+        "max_speed": ws_max.where(llj_flag),
+        "max_dir": wd_at_max.where(llj_flag),
+        "max_level": ws_max_level.where(llj_flag),
+        "min_speed": ws_min.where(llj_flag),
+        "min_level": ws_min_level.where(llj_flag),
+        "speed_diff": diff.where(llj_flag),
+        "bonner_type": bonner.where(llj_flag),
+        "asj_type": asj.where(llj_flag),
+        "llj_flag": llj_flag,
+    })
+

@@ -1,7 +1,8 @@
 # No-Terrain WRF sensitivity experiment
 
-Companion code and figures for the No-Terrain sensitivity run referenced
-in **The Black Sea Coastal-Barrier Jet** (MWR submission, Ozturk et al.).
+Companion code, geogrid files, and figures for the No-Terrain sensitivity
+run referenced in **The Black Sea Coastal-Barrier Jet** (MWR submission,
+Ozturk et al.).
 
 ## What this is
 
@@ -19,27 +20,28 @@ All other WPS / namelist settings are identical to the Control run.
 
 | File | What it is |
 |---|---|
-| `make_no_terrain_geo.py` | The exact script used to modify the WPS geogrid files (`geo_em.d01.nc`, `geo_em.d02.nc`) -> `*_no_terrain.nc`. Loops over both nested domains. |
-| `terrain_control_d01.png` | d01 (5 km outer domain) terrain, Control (default WPS geogrid). |
-| `terrain_noterrain_d01.png` | d01 terrain after No-Terrain modification. |
-| `terrain_control_vs_noterrain_d01.png` | d01 side-by-side comparison; modification box drawn in red. |
-| `terrain_control_d02.png` | d02 (1 km nested domain) terrain, Control. |
-| `terrain_noterrain_d02.png` | d02 terrain after No-Terrain modification. |
-| `terrain_control_vs_noterrain_d02.png` | d02 side-by-side comparison. |
-| `_make_terrain_pngs.py` | Plotting script used to produce the PNGs above (loops over d01 and d02). |
+| `make_no_terrain_geo.py` | Script that modifies the WPS geogrid file (`geo_em.d01.nc` -> `geo_em.d01_no_terrain.nc`). |
+| `geo_em.d01.nc` | Original WPS geogrid (Control). |
+| `geo_em.d01_no_terrain.nc` | Modified geogrid used by the No-Terrain WRF run. |
+| `terrain_control.png` | Terrain map, Control (default WPS geogrid). |
+| `terrain_noterrain.png` | Terrain map after No-Terrain modification. |
+| `terrain_control_vs_noterrain.png` | Side-by-side comparison; modification box drawn in red. |
+| `_make_terrain_pngs.py` | Plotting script used to produce the PNGs above. |
 
 ## How to reproduce the No-Terrain run
 
-1. Run WPS as usual to produce `geo_em.d01.nc` and `geo_em.d02.nc`.
-2. Edit the input paths at the top of `make_no_terrain_geo.py` to point
-   to your geogrid files, then run:
+The exact geogrid we used is shipped here as `geo_em.d01_no_terrain.nc`.
+To regenerate it yourself from a fresh WPS run:
+
+1. Run WPS as usual to produce `geo_em.d01.nc`.
+2. Edit the input path at the top of `make_no_terrain_geo.py` to point
+   to your geogrid file, then run:
    ```bash
    python make_no_terrain_geo.py
    ```
-   This writes `geo_em.d01_no_terrain.nc` and `geo_em.d02_no_terrain.nc`
-   next to the originals.
-3. In your WPS work directory, rename the modified files back to
-   `geo_em.d0X.nc` (or symlink) and re-run `real.exe` and `wrf.exe`.
+   This writes `geo_em.d01_no_terrain.nc` next to the original.
+3. In your WPS work directory, rename the modified file back to
+   `geo_em.d01.nc` (or symlink) and re-run `real.exe` and `wrf.exe`.
 
 ## Dependencies
 

@@ -2,9 +2,9 @@
 make_no_terrain_geo.py
 ======================
 
-Generates the modified WPS geogrid files (`geo_em.d01_no_terrain.nc`,
-`geo_em.d02_no_terrain.nc`) used in the No-Terrain sensitivity run of
-the Black Sea Coastal-Barrier Jet (BCBJ) WRF experiment.
+Generates the modified WPS geogrid file (`geo_em.d01_no_terrain.nc`)
+used in the No-Terrain sensitivity run of the Black Sea Coastal-Barrier
+Jet (BCBJ) WRF experiment.
 
 Method
 ------
@@ -21,16 +21,14 @@ Usage
 -----
     python make_no_terrain_geo.py
 
-Inputs (edit `input_files` if needed):
+Input (edit `input_files` if needed):
     D:\\geo_em.d01.nc
-    D:\\geo_em.d02.nc
 
-Outputs (written next to the inputs):
+Output (written next to the input):
     D:\\geo_em.d01_no_terrain.nc
-    D:\\geo_em.d02_no_terrain.nc
 
-Drop the *_no_terrain.nc files into your WPS workdir (renaming them
-back to `geo_em.d0X.nc`), then run `real.exe` and `wrf.exe` as usual.
+Drop the *_no_terrain.nc file into your WPS workdir (renaming it back
+to `geo_em.d01.nc`), then run `real.exe` and `wrf.exe` as usual.
 """
 
 import os
@@ -41,7 +39,7 @@ import netCDF4 as nc
 # ---------------------------------------------------------------------------
 # Settings
 # ---------------------------------------------------------------------------
-input_files = [r"D:\geo_em.d01.nc", r"D:\geo_em.d02.nc"]
+input_files = [r"D:\geo_em.d01.nc"]
 
 target_hgt       = 10.0   # flattened core height [m] over land
 smooth_grid_dist = 20     # buffer width [grid cells]

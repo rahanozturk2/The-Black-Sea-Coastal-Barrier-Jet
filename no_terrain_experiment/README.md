@@ -19,11 +19,14 @@ All other WPS / namelist settings are identical to the Control run.
 
 | File | What it is |
 |---|---|
-| `make_no_terrain_geo.py` | The exact script used to modify the WPS geogrid files (`geo_em.d01.nc`, `geo_em.d02.nc`) -> `*_no_terrain.nc`. |
-| `terrain_control.png` | d02 terrain, Control (default WPS geogrid). |
-| `terrain_noterrain.png` | d02 terrain after No-Terrain modification. |
-| `terrain_control_vs_noterrain.png` | Side-by-side comparison; modification box drawn in red. |
-| `_make_terrain_pngs.py` | Plotting script used to produce the PNGs above. |
+| `make_no_terrain_geo.py` | The exact script used to modify the WPS geogrid files (`geo_em.d01.nc`, `geo_em.d02.nc`) -> `*_no_terrain.nc`. Loops over both nested domains. |
+| `terrain_control_d01.png` | d01 (5 km outer domain) terrain, Control (default WPS geogrid). |
+| `terrain_noterrain_d01.png` | d01 terrain after No-Terrain modification. |
+| `terrain_control_vs_noterrain_d01.png` | d01 side-by-side comparison; modification box drawn in red. |
+| `terrain_control_d02.png` | d02 (1 km nested domain) terrain, Control. |
+| `terrain_noterrain_d02.png` | d02 terrain after No-Terrain modification. |
+| `terrain_control_vs_noterrain_d02.png` | d02 side-by-side comparison. |
+| `_make_terrain_pngs.py` | Plotting script used to produce the PNGs above (loops over d01 and d02). |
 
 ## How to reproduce the No-Terrain run
 

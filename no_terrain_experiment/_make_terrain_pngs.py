@@ -16,10 +16,6 @@ GEO_NTER = os.path.join(HERE, "geo_em.d01_no_terrain.nc")
 EXTENT   = [22, 42, 36, 48]       # lon_min, lon_max, lat_min, lat_max
 OUT_DIR  = HERE
 
-# Modification region (Kure Mts.) used in make_no_terrain_geo.py
-LAT_MIN, LAT_MAX = 39.5, 43.0
-LON_MIN, LON_MAX = 28.5, 36.0
-
 
 def load_geo(path):
     ds = nc.Dataset(path)
@@ -36,10 +32,6 @@ def draw_panel(ax, lon, lat, hgt, title, panel):
     mesh = ax.pcolormesh(lon, lat, hgt, cmap='terrain',
                          vmin=0, vmax=2000, shading='auto',
                          transform=ccrs.PlateCarree())
-    box_lon = [LON_MIN, LON_MAX, LON_MAX, LON_MIN, LON_MIN]
-    box_lat = [LAT_MIN, LAT_MIN, LAT_MAX, LAT_MAX, LAT_MIN]
-    ax.plot(box_lon, box_lat, color='red', linewidth=1.6, linestyle='--',
-            transform=ccrs.PlateCarree(), label='Modification region')
     ax.set_extent(EXTENT, crs=ccrs.PlateCarree())
     gl = ax.gridlines(draw_labels=True, linewidth=0.6, color='gray',
                       alpha=0.5, linestyle=':')
@@ -67,9 +59,7 @@ def make_two_panel():
     m1 = draw_panel(axs[0], lon_c, lat_c, hgt_c,
                     "Control (WPS default terrain)", "(a)")
     draw_panel(axs[1], lon_n, lat_n, hgt_n,
-               "No-Terrain (Kure Mts. flattened to 10 m)", "(b)")
-    axs[0].legend(loc='lower right', fontsize=9, frameon=True,
-                  fancybox=False, edgecolor='black')
+               "No-Terrain (entire d01 flattened: land 10 m, sea 0 m)", "(b)")
 
     cax = fig.add_axes([0.915, 0.16, 0.012, 0.70])
     cb = fig.colorbar(m1, cax=cax)
@@ -86,14 +76,12 @@ def make_two_panel():
     print(f"Saved: {out}")
 
 
-def make_single(path, label, panel_title, fname):
+def make_single(path, panel, panel_title, fname):
     lat, lon, hgt, _ = load_geo(path)
     plt.rcParams.update({'font.family': 'serif', 'font.size': 11})
     fig = plt.figure(figsize=(7.2, 5.8))
     ax = plt.axes(projection=ccrs.PlateCarree())
-    mesh = draw_panel(ax, lon, lat, hgt, panel_title, label)
-    ax.legend(loc='lower right', fontsize=9, frameon=True,
-              fancybox=False, edgecolor='black')
+    mesh = draw_panel(ax, lon, lat, hgt, panel_title, panel)
     cax = fig.add_axes([0.91, 0.13, 0.022, 0.74])
     cb = fig.colorbar(mesh, cax=cax)
     cb.set_label('Terrain height (m)', fontsize=12, fontweight='bold',
@@ -108,7 +96,8 @@ def make_single(path, label, panel_title, fname):
 if __name__ == "__main__":
     make_single(GEO_CTRL, "(a)", "Control (WPS default terrain)",
                 "terrain_control.png")
-    make_single(GEO_NTER, "(b)", "No-Terrain (Kure Mts. flattened to 10 m)",
+    make_single(GEO_NTER, "(b)",
+                "No-Terrain (entire d01 flattened: land 10 m, sea 0 m)",
                 "terrain_noterrain.png")
     make_two_panel()
     print("Done.")

@@ -6,26 +6,33 @@ Ozturk et al.).
 
 ## What this is
 
-A controlled experiment that isolates the role of the Kure Mountains
-(northern Anatolia) in maintaining the Black Sea Coastal-Barrier Jet
-(BCBJ). The terrain inside a fixed box (39.5-43.0 deg N, 28.5-36.0 deg E)
-is reduced to **10 m** over land while the original coastline and all
-ocean points are preserved. A 20-grid-cell cosine-tapered buffer blends
-the flattened core back to the surrounding orography so no artificial
-step is introduced.
+A controlled experiment that removes all orographic forcing from the
+WRF outer domain (d01, 5 km) to isolate the role of the Kure Mountains
+and the wider Anatolian relief in maintaining the Black Sea
+Coastal-Barrier Jet (BCBJ).
 
-All other WPS / namelist settings are identical to the Control run.
+Every grid point in `geo_em.d01.nc` is rewritten as a function of the
+WPS LANDMASK field:
+
+| Where | HGT_M is set to |
+|---|---|
+| LANDMASK == 1 (land) | **10 m** |
+| LANDMASK == 0 (sea)  | **0 m** |
+
+No bounding box, no buffer smoothing -- the whole d01 domain becomes a
+flat plate. All other WPS / namelist settings are identical to the
+Control run.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `make_no_terrain_geo.py` | Script that modifies the WPS geogrid file (`geo_em.d01.nc` -> `geo_em.d01_no_terrain.nc`). |
+| `make_no_terrain_geo.py` | Script that rewrites the WPS geogrid (`geo_em.d01.nc` -> `geo_em.d01_no_terrain.nc`). |
 | `geo_em.d01.nc` | Original WPS geogrid (Control). |
-| `geo_em.d01_no_terrain.nc` | Modified geogrid used by the No-Terrain WRF run. |
+| `geo_em.d01_no_terrain.nc` | Flattened geogrid used by the No-Terrain WRF run. |
 | `terrain_control.png` | Terrain map, Control (default WPS geogrid). |
 | `terrain_noterrain.png` | Terrain map after No-Terrain modification. |
-| `terrain_control_vs_noterrain.png` | Side-by-side comparison; modification box drawn in red. |
+| `terrain_control_vs_noterrain.png` | Side-by-side comparison. |
 | `_make_terrain_pngs.py` | Plotting script used to produce the PNGs above. |
 
 ## How to reproduce the No-Terrain run
@@ -39,7 +46,6 @@ To regenerate it yourself from a fresh WPS run:
    ```bash
    python make_no_terrain_geo.py
    ```
-   This writes `geo_em.d01_no_terrain.nc` next to the original.
 3. In your WPS work directory, rename the modified file back to
    `geo_em.d01.nc` (or symlink) and re-run `real.exe` and `wrf.exe`.
 

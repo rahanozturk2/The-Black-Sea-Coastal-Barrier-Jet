@@ -1,0 +1,35 @@
+&share
+ wrf_core         = 'ARW',
+ max_dom          = 2,
+ start_date       = '2012-09-16_00:00:00', '2012-09-16_00:00:00',
+ end_date         = '2012-09-18_00:00:00', '2012-09-18_00:00:00',
+ interval_seconds = 3600,
+/
+
+&geogrid
+ parent_id         = 1,    1,
+ parent_grid_ratio = 1,    5,
+ i_parent_start    = 1,    65,
+ j_parent_start    = 1,    50,
+ e_we              = 201,  401,
+ e_sn              = 161,  351,
+ geog_data_res     = 'default', 'default',
+ dx                = 5000,
+ dy                = 5000,
+ map_proj          = 'lambert',
+ ref_lat           = 42.25,
+ ref_lon           = 32.00,
+ truelat1          = 41.75,
+ truelat2          = 42.25,
+ stand_lon         = 32.0,
+ geog_data_path    = '/path/to/WPS_GEOG',
+/
+
+&ungrib
+ out_format = 'WPS',
+ prefix     = 'ecm',
+/
+
+&metgrid
+ fg_name = 'ecm',
+/

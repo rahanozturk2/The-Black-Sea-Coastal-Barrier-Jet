@@ -35,7 +35,7 @@
  max_dom                             = 2,
  e_we                                = 201,  401,
  e_sn                                = 161,  351,
- e_vert                              = 49,   49,
+ e_vert                              = 49,   49,    ! 49 eta interfaces => 48 model layers (matches manuscript)
  p_top_requested                     = 5000,
  num_metgrid_levels                  = 38,
  num_metgrid_soil_levels             = 4,
